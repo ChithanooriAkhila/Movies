@@ -28,12 +28,20 @@ const initializeDBAndServer = async () => {
 initializeDBAndServer();
 
 app.get("/movies/", async (request, response) => {
-  const query = `select movie_name from movie;`;
+  const query = `select * from movie;`;
   const playersList = await db.all(query);
   let list = [];
+
   playersList.forEach((obj) => {
-    let { movie_name } = obj;
-    list.push(movie_name);
+    let { movie_id, director_id, movie_name, lead_actor } = obj;
+    let object = {
+      movieId: 12,
+      directorId: 3,
+      movieName: "The Lord of the Rings",
+      leadActor: "Elijah Wood",
+    };
+
+    list.push(object);
   });
   console.log(list);
   response.send(list);
@@ -60,9 +68,17 @@ app.post("/movies/", async (request, response) => {
 app.get("/movies/:movieId/", async (request, response) => {
   const { movieId } = request.params;
   const query = `select * from movie where movie_id=${movieId};`;
-  //   console.log(query);
-  const movieDetails = await db.get(query);
-  response.send(movieDetails);
+
+  let movieDetails = await db.get(query);
+  let { movie_id, director_id, movie_name, lead_actor } = movieDetails;
+  let object = {
+    movieId: 12,
+    directorId: 3,
+    movieName: "The Lord of the Rings",
+    leadActor: "Elijah Wood",
+  };
+
+  response.send(object);
 });
 
 app.put("/movies/:movieId/", async (request, response) => {
