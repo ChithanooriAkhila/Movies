@@ -30,7 +30,13 @@ initializeDBAndServer();
 app.get("/movies/", async (request, response) => {
   const query = `select movie_name from movie;`;
   const playersList = await db.all(query);
-  response.send(playersList);
+  let list = [];
+  playersList.forEach((obj) => {
+    let { movie_name } = obj;
+    list.push(movie_name);
+  });
+  console.log(list);
+  response.send(list);
 });
 
 app.post("/movies/", async (request, response) => {
@@ -54,6 +60,7 @@ app.post("/movies/", async (request, response) => {
 app.get("/movies/:movieId/", async (request, response) => {
   const { movieId } = request.params;
   const query = `select * from movie where movie_id=${movieId};`;
+  //   console.log(query);
   const movieDetails = await db.get(query);
   response.send(movieDetails);
 });
