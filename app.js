@@ -30,21 +30,12 @@ initializeDBAndServer();
 app.get("/movies/", async (request, response) => {
   const query = `select * from movie;`;
   const playersList = await db.all(query);
-  let list = [];
 
-  playersList.forEach((obj) => {
-    let { movie_id, director_id, movie_name, lead_actor } = obj;
-    let object = {
-      movieId: 12,
-      directorId: 3,
-      movieName: "The Lord of the Rings",
-      leadActor: "Elijah Wood",
-    };
+  const res = playersList.map((obj) => ({
+    movieName: obj.movie_name,
+  }));
 
-    list.push(object);
-  });
-  console.log(list);
-  response.send(list);
+  response.send(res);
 });
 
 app.post("/movies/", async (request, response) => {
@@ -72,10 +63,10 @@ app.get("/movies/:movieId/", async (request, response) => {
   let movieDetails = await db.get(query);
   let { movie_id, director_id, movie_name, lead_actor } = movieDetails;
   let object = {
-    movieId: 12,
-    directorId: 3,
-    movieName: "The Lord of the Rings",
-    leadActor: "Elijah Wood",
+    movieId: movie_id,
+    directorId: director_id,
+    movieName: movie_name,
+    leadActor: lead_actor,
   };
 
   response.send(object);
@@ -109,15 +100,25 @@ app.delete("/movies/:movieId/", async (request, response) => {
 app.get("/directors/", async (request, response) => {
   const query = `select * from director;`;
   const directorsList = await db.all(query);
-  //   console.log(playersList);
-  response.send(directorsList);
+
+  const res = directorsList.map((obj) => ({
+    directorId: obj.director_id,
+    directorName: obj.director_name,
+  }));
+
+  response.send(res);
 });
 
 app.get("/directors/:directorId/movies/", async (request, response) => {
   const { directorId } = request.params;
-  const query = `select movie_name from movie where director_id=${directorId};`;
-  const movieDetails = await db.get(query);
-  response.send(movieDetails);
+  const query = `select * from movie where director_id=${directorId};`;
+  const movieDetails = await db.all(query);
+
+  const res = movieDetails.map((obj) => ({
+    movieName: obj.movie_name,
+  }));
+
+  response.send(res);
 });
 
 module.exports = app;
